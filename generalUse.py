@@ -1,5 +1,6 @@
 from pathlib import Path
 import pandas as pd
+import numpy as np
 
 # RegEx module used on 2nd func
 import re
@@ -59,3 +60,41 @@ def null_summary(df: pd.DataFrame) -> pd.DataFrame:
 dfNullSumm = null_summary(df)
 
 print(dfNullSumm)
+
+
+# 4. duplicated key check
+def find_duplicate(df: pd.DataFrame, keys: list[str]) -> pd.DataFrame:
+    dupes = df[df.duplicated(subset=keys, keep=False)].copy()
+    return dupes.sort_values(by=keys).reset_index(drop=True)
+
+dupes = find_duplicate(df, ["SUBSCRIPTIONID"])
+print(dupes)
+
+
+# 5. create conditional column
+def condi_column (df: pd.DataFrame) -> pd.DataFrame:
+    df = df.copy()
+    # can be used for one or multiple columns
+    cols = ['CUSTO_SCAN', 'CUSTO_MS']
+    # regex is removing anything besides numbers
+    for col in cols:
+        df[col] = (
+            df[col]
+            .astype(str)
+            .str.replace(r'\D', "", regex=True)
+            .astype(float)
+        )
+
+    # change conditions accordingly
+    conditions = [
+        df['CUSTO_SCAN'] >= 100.000,
+        df['CUSTO_SCAN'] >= 50.000,
+        df['CUSTO_SCAN'] < 50.000
+    ]
+    options = ['High', 'Medium', 'Low']
+
+    df['SEGMENT'] = np.select(conditions, options, default='Unkown')
+    return df
+
+df_seg = condi_column(df)
+print(df_seg['SEGMENT'])
