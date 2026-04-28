@@ -98,3 +98,18 @@ def condi_column (df: pd.DataFrame) -> pd.DataFrame:
 
 df_seg = condi_column(df)
 print(df_seg['SEGMENT'])
+
+
+# 6. Change file to uppercase,keeping current format
+def to_uppercase(file_path):
+    with open(file_path, "r", encoding="utf-8") as file:
+        text = file.read()
+
+    with open(file_path, "w", encoding='utf-8') as file:
+        file.write(text.upper())
+
+txt = "C:/Users/Arthu/Downloads/text.txt"
+to_uppercase(txt)
+
+
+### add logging next
