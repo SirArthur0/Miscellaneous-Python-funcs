@@ -1,9 +1,40 @@
 from pathlib import Path
+from datetime import datetime
+from zoneinfo import ZoneInfo
+import logging
 import pandas as pd
 import numpy as np
 
 # RegEx module used on 2nd func
 import re
+
+
+east_tz = ZoneInfo("America/New_York")
+
+log_dir = Path(r'C:/Users/Arthu/Documents/Miscellaneous code/logs')
+log_file = log_dir / f"process_{datetime.now(east_tz).strftime('%Y-%m-%d_%H-%M-%S')}.log"
+
+class EastUSFormatter(logging.Formatter):
+    def formatTime(self, record, datefmt=None):
+        dt = datetime.fromtimestamp(record.created, east_tz)
+        return dt.strftime('%Y-%m-%d %H:%M:%S')
+    
+logger = logging.getLogger('process')
+logger.setLevel(logging.INFO)
+logger.handlers.clear()
+
+formatter = EastUSFormatter("%(asctime)s | %(levelname)s | %(message)s")
+
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(formatter)
+
+file_handler = logging.FileHandler(log_file, encoding="utf-8")
+file_handler.setFormatter(formatter)
+
+logger.addHandler(console_handler)
+logger.addHandler(file_handler)
+
+logger.info("Starting NOW!!")
 
 # 1. read (almost) any file
 def read_data(file_path: str | Path) -> pd.DataFrame:
@@ -22,7 +53,6 @@ def read_data(file_path: str | Path) -> pd.DataFrame:
 path = "C:/Users/Arthu/Downloads/data.xlsx"
 df = read_data(path)
 df.info()
-
 
 
 # 2. standardize column names
@@ -110,6 +140,3 @@ def to_uppercase(file_path):
 
 txt = "C:/Users/Arthu/Downloads/text.txt"
 to_uppercase(txt)
-
-
-### add logging next
