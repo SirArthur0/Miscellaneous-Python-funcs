@@ -8,29 +8,56 @@ import numpy as np
 # RegEx module used on 2nd func
 import re
 
+# logging section
 
+###### How it works ######
+#
+# 1. Defining timezone
+# 2. Defining where the file will be saved
+# 3. Create custom formatter East US timestamps 
+# 4. Send log to both console and file
+# 
+
+# define TimeZone
+# standard time and dayligh saving
 east_tz = ZoneInfo("America/New_York")
 
+
+# folder where log files will be stored
 log_dir = Path(r'C:/Users/Arthu/Documents/Miscellaneous code/logs')
+# if folder doesn't exist, creates a new one
+log_dir.mkdir(parents=True, exist_ok=True)
+# builds path+filename
 log_file = log_dir / f"process_{datetime.now(east_tz).strftime('%Y-%m-%d_%H-%M-%S')}.log"
 
+# class the will receive the expected format
 class EastUSFormatter(logging.Formatter):
     def formatTime(self, record, datefmt=None):
         dt = datetime.fromtimestamp(record.created, east_tz)
         return dt.strftime('%Y-%m-%d %H:%M:%S')
     
+# sends the actual message
 logger = logging.getLogger('process')
+# tells the logger to accept messages at INFO level
 logger.setLevel(logging.INFO)
+# clean handlers (best practice)
 logger.handlers.clear()
 
+# defines the format of each log line
+# asctime = timestamp
+# lefvelname = INFO, WARNING, ERROR, etc.
+# message = actual text
 formatter = EastUSFormatter("%(asctime)s | %(levelname)s | %(message)s")
 
+# handlers that sends message to console
 console_handler = logging.StreamHandler()
 console_handler.setFormatter(formatter)
 
+# send logs to the file path, keep the same console format
 file_handler = logging.FileHandler(log_file, encoding="utf-8")
 file_handler.setFormatter(formatter)
 
+# links both handlers to the logger, before this nothing is linked
 logger.addHandler(console_handler)
 logger.addHandler(file_handler)
 
@@ -71,9 +98,8 @@ def standardize_columns(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 df = standardize_columns(df)
-
+logger.info(" ###### standardize_columns over ###### ")
 df.info()
-
 
 
 # 3. Null summary
@@ -99,7 +125,6 @@ def find_duplicate(df: pd.DataFrame, keys: list[str]) -> pd.DataFrame:
 
 dupes = find_duplicate(df, ["SUBSCRIPTIONID"])
 print(dupes)
-
 
 # 5. create conditional column
 def condi_column (df: pd.DataFrame) -> pd.DataFrame:
@@ -128,6 +153,7 @@ def condi_column (df: pd.DataFrame) -> pd.DataFrame:
 
 df_seg = condi_column(df)
 print(df_seg['SEGMENT'])
+logger.info(" ###### condi_column over, SEGMENT column added to df ###### ")
 
 
 # 6. Change file to uppercase,keeping current format
@@ -140,3 +166,4 @@ def to_uppercase(file_path):
 
 txt = "C:/Users/Arthu/Downloads/text.txt"
 to_uppercase(txt)
+logger.info(" ###### to_uppercase over, txt converted to uppercase, format kept the same ######")

@@ -1,0 +1,4 @@
+2026-05-01 16:05:17 | INFO | Starting NOW!!
+2026-05-01 16:05:17 | INFO |  ###### standardize_columns over ###### 
+2026-05-01 16:05:18 | INFO |  ###### condi_column over, SEGMENT column added to df ###### 
+2026-05-01 16:05:18 | INFO |  ###### to_uppercase over, txt converted to uppercase, format kept the same ######
